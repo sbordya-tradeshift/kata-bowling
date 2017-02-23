@@ -15,7 +15,6 @@ class TurnClassifierTest {
 	@BeforeEach
 	void setUp() {
 		this.typeClassifier = new TurnClassifier();
-
 	}
 
 	@Test
@@ -27,7 +26,6 @@ class TurnClassifierTest {
 	void applySpare() {
 		assertEquals(Turn.Type.SPARE, this.typeClassifier.apply(new Turn(5, 5)));
 	}
-
 
 	@Test
 	void applyStrike() {
