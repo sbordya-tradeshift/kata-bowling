@@ -20,7 +20,7 @@ class ScoreCalculatorTest {
 
 	@BeforeEach
 	void setUp() {
-		this.calculator = new ScoreCalculator(new TurnClassifier());
+		this.calculator = new ScoreCalculator();
 	}
 
 	@Test

@@ -14,45 +14,43 @@ import static java.util.stream.IntStream.range;
 @RequiredArgsConstructor
 public class ScoreCalculator implements Function<List<Turn>, Integer> {
 
-	private final Function<Turn, Turn.Type> turnClassifier;
-
 	@Override
 	public Integer apply(List<Turn> turns) {
-		return range(0, 10)
-				.map(index -> {
-					final Turn current = turns.get(index);
-					final Supplier<Turn> nextSupplier = turnSupplier(turns, index + 1);
-					final Supplier<Turn> nextNextSupplier = turnSupplier(turns, index + 2);
-					switch (turnClassifier.apply(current)) {
-						case REGULAR:
-							return regularScore(current);
-						case SPARE:
-							return spareScore(current, nextSupplier);
-						case STRIKE:
-							return strikeScore(current, nextSupplier, nextNextSupplier);
-						default:
-							throw new IllegalArgumentException();
-					}
-				})
-				.sum();
+		return range(0, 10).map(index -> score(turns, index)).sum();
 	}
 
-	private int regularScore(Turn current) {
-		return current.total();
+	private int score(List<Turn> turns, int index) {
+		final Turn currentTurn = turns.get(index);
+		final Supplier<Turn> nextSupplier = turnSupplier(turns, index + 1);
+		final Supplier<Turn> nextNextSupplier = turnSupplier(turns, index + 2);
+		switch (Turn.Type.of(currentTurn)) {
+			case REGULAR:
+				return regularScore(currentTurn);
+			case SPARE:
+				return spareScore(currentTurn, nextSupplier);
+			case STRIKE:
+				return strikeScore(currentTurn, nextSupplier, nextNextSupplier);
+			default:
+				throw new IllegalArgumentException();
+		}
 	}
 
-	private int spareScore(Turn current, Supplier<Turn> nextSupplier) {
-		return current.total() + nextSupplier.get().firstThrow();
+	private int regularScore(Turn turn) {
+		return turn.total();
 	}
 
-	private int strikeScore(Turn current, Supplier<Turn> nextSupplier, Supplier<Turn> nextNextSupplier) {
-		final Turn nextTurn = nextSupplier.get();
-		switch (this.turnClassifier.apply(nextTurn)) {
+	private int spareScore(Turn turn, Supplier<Turn> nextTurnSupplier) {
+		return turn.total() + nextTurnSupplier.get().firstThrow();
+	}
+
+	private int strikeScore(Turn turn, Supplier<Turn> nextTurnSupplier, Supplier<Turn> nextNextTurnSupplier) {
+		final Turn nextTurn = nextTurnSupplier.get();
+		switch (Turn.Type.of(nextTurn)) {
 			case REGULAR:
 			case SPARE:
-				return current.total() + nextTurn.total();
+				return turn.total() + nextTurn.total();
 			case STRIKE:
-				return current.total() + nextTurn.total() + nextNextSupplier.get().firstThrow();
+				return turn.total() + nextTurn.total() + nextNextTurnSupplier.get().firstThrow();
 			default:
 				throw new IllegalArgumentException();
 		}
