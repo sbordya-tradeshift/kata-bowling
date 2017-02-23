@@ -21,8 +21,8 @@ public class ScoreCalculator implements Function<List<Turn>, Integer> {
 
 	private int score(List<Turn> turns, int index) {
 		final Turn currentTurn = turns.get(index);
-		final Supplier<Turn> nextSupplier = turnSupplier(turns, index + 1);
-		final Supplier<Turn> nextNextSupplier = turnSupplier(turns, index + 2);
+		final Supplier<Turn> nextSupplier = () -> turns.get(index + 1);
+		final Supplier<Turn> nextNextSupplier = () -> turns.get(index + 2);
 		switch (Turn.Type.of(currentTurn)) {
 			case REGULAR:
 				return regularScore(currentTurn);
@@ -54,9 +54,5 @@ public class ScoreCalculator implements Function<List<Turn>, Integer> {
 			default:
 				throw new IllegalArgumentException();
 		}
-	}
-
-	private Supplier<Turn> turnSupplier(List<Turn> turns, int index) {
-		return () -> turns.get(index);
 	}
 }
