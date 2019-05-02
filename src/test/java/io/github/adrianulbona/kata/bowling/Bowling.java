@@ -1,16 +1,18 @@
 package io.github.adrianulbona.kata.bowling;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Bowling {
 
     int score;
+    List<Integer> games = new ArrayList<>();
 
     public Bowling(int score) {
         this.score = score;
     }
 
-    public int roll(List<Integer> rolls) {
+    public int scoreGame(List<Integer> rolls) {
         int roll = 0;
         for (int frame = 0; frame < 10; frame++) {
 
@@ -39,5 +41,9 @@ public class Bowling {
 
     private boolean isStrike(List<Integer> rolls, int roll) {
         return rolls.get(roll) == 10;
+    }
+
+    public void playGame(List<Integer> trials) {
+        this.games = trials;
     }
 }
